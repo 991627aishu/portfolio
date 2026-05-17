@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         duration: 1000,
         once: true,
         mirror: false,
-        offset: 100
+        offset: 50
     });
 
     // Name Word-by-Word Animation
@@ -21,15 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     words.forEach((word, index) => {
         const span = document.createElement('span');
         span.textContent = word;
-        span.className = 'name-word inline-block mr-4';
+        span.className = 'name-word inline-block mx-2 md:mx-4';
         span.style.transitionDelay = `${index * 0.3}s`;
         heroName.appendChild(span);
-        
-        // Add space after word except last one
-        if (index < words.length - 1) {
-            const space = document.createTextNode(' ');
-            heroName.appendChild(space);
-        }
     });
 
     // Trigger name animation after a short delay
@@ -63,12 +57,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileLinks = document.querySelectorAll('.mobile-link');
 
     const toggleMenu = () => {
-        mobileMenu.classList.toggle('translate-x-full');
+        const isOpen = !mobileMenu.classList.contains('translate-x-full');
+        
+        if (isOpen) {
+            // Closing
+            document.body.style.overflow = '';
+            mobileLinks.forEach(link => {
+                link.style.opacity = '0';
+                link.style.transform = 'translateY(20px)';
+            });
+            setTimeout(() => {
+                mobileMenu.classList.add('translate-x-full');
+            }, 300);
+        } else {
+            // Opening
+            document.body.style.overflow = 'hidden';
+            mobileMenu.classList.remove('translate-x-full');
+            mobileLinks.forEach((link, index) => {
+                link.style.opacity = '0';
+                link.style.transform = 'translateY(20px)';
+                link.style.transition = `all 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${0.1 + index * 0.05}s`;
+                
+                setTimeout(() => {
+                    link.style.opacity = '1';
+                    link.style.transform = 'translateY(0)';
+                }, 50);
+            });
+        }
     };
 
     mobileMenuBtn.addEventListener('click', toggleMenu);
     closeMenu.addEventListener('click', toggleMenu);
-    mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+    mobileLinks.forEach(link => link.addEventListener('click', () => {
+        // Just close without animation delay for instant navigation
+        document.body.style.overflow = '';
+        mobileMenu.classList.add('translate-x-full');
+    }));
 
     // Theme Toggle
     const themeToggle = document.getElementById('theme-toggle');
